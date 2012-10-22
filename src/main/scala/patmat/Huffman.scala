@@ -22,8 +22,6 @@ object Huffman {
   case class Fork(left: CodeTree, right: CodeTree, chars: List[Char], weight: Int) extends CodeTree
   case class Leaf(char: Char, weight: Int) extends CodeTree
 
-
-
   // Part 1: Basics
 
   def weight(tree: CodeTree): Int = tree match {
@@ -31,12 +29,13 @@ object Huffman {
     case Fork(left, right, chars, weight) => weight
   }
 
-  def chars(tree: CodeTree): List[Char] = ??? // tree match ...
-
+  def chars(tree: CodeTree): List[Char] = tree match {
+    case Leaf(char, weight) => List(char)
+    case Fork(left, right, chars, weight) => chars
+  }
+  
   def makeCodeTree(left: CodeTree, right: CodeTree) =
     Fork(left, right, chars(left) ::: chars(right), weight(left) + weight(right))
-
-
 
   // Part 2: Generating Huffman trees
 
@@ -74,8 +73,23 @@ object Huffman {
    *       println("integer is  : "+ theInt)
    *   }
    */
-  def times(chars: List[Char]): List[(Char, Int)] = ???
-
+  def times(chars: List[Char]): List[(Char, Int)] = 
+    if(chars.isEmpty) Nil
+    else getCharWeights(chars)
+  
+  private def pack[T](xs: List[T]): List[List[T]] = xs match {
+    case Nil => Nil
+    case x :: xs1 =>
+      val(equalToX, notEqualToX) = xs partition (y => y == x)
+      equalToX :: pack(notEqualToX)
+  }
+  
+  private def getCharWeights[T](xs: List[T]): List[(T,Int)] = xs match {
+    case Nil => Nil
+    case x :: xs1 =>
+      pack(xs) map (ys => (ys.head, ys.length))
+  }
+    
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
    *
