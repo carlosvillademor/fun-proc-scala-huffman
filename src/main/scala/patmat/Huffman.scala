@@ -102,7 +102,7 @@ object Huffman {
     case (char, weight) :: freqs1 => insertInAscendingOrderOfWeight(new Leaf(char, weight), makeOrderedLeafList(freqs1))
   }
   
-  def insertInAscendingOrderOfWeight(leaf: Leaf, leafs: List[Leaf]): List[Leaf] = leafs match {
+  private def insertInAscendingOrderOfWeight(leaf: Leaf, leafs: List[Leaf]): List[Leaf] = leafs match {
     case Nil => List(leaf)
     case l :: leafs1 => 
       if(leaf.weight <= l.weight) List(leaf) ++ insertInAscendingOrderOfWeight(l, leafs1)
@@ -152,7 +152,9 @@ object Huffman {
    *    the example invocation. Also define the return type of the `until` function.
    *  - try to find sensible parameter names for `xxx`, `yyy` and `zzz`.
    */
-  def until(xxx: ???, yyy: ???)(zzz: ???): ??? = ???
+  def until(singleton: List[CodeTree] => Boolean, combine: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): List[CodeTree] = 
+    if(singleton(trees)) trees
+    else until(singleton, combine)(combine(trees))
 
   /**
    * This function creates a code tree which is optimal to encode the text `chars`.
@@ -160,7 +162,10 @@ object Huffman {
    * The parameter `chars` is an arbitrary text. This function extracts the character
    * frequencies from that text and creates a code tree based on them.
    */
-  def createCodeTree(chars: List[Char]): CodeTree = ???
+  def createCodeTree(chars: List[Char]): CodeTree = chars match {
+      case Nil => throw new Exception("createCodeTree for empty list of characters")
+      case char :: chars1 => until(singleton, combine)(makeOrderedLeafList(times(chars))).head
+  }
 
 
 
