@@ -167,8 +167,6 @@ object Huffman {
       case char :: chars1 => until(singleton, combine)(makeOrderedLeafList(times(chars))).head
   }
 
-
-
   // Part 3: Decoding
 
   type Bit = Int
@@ -177,8 +175,20 @@ object Huffman {
    * This function decodes the bit sequence `bits` using the code tree `tree` and returns
    * the resulting list of characters.
    */
-  def decode(tree: CodeTree, bits: List[Bit]): List[Char] = ???
-
+  def decode(tree: CodeTree, bits: List[Bit]): List[Char] = 
+    if(bits.isEmpty) List()
+    else decodeAccumulator(tree, bits, List())
+  
+  private def decodeAccumulator(tree: CodeTree, bits: List[Bit], message: List[Char]): List[Char] = tree match {
+    case Leaf(char, weight) =>
+      if(bits.isEmpty) message ++ List(char)
+      else decodeAccumulator(tree, bits.tail, message ++ List(char))
+    case Fork(left, right, chars, weights) => 
+      if(bits.isEmpty) message
+      else if(bits.head == 0) decode(left, bits.tail)
+      else decode(right, bits.tail)
+  }
+  
   /**
    * A Huffman coding tree for the French language.
    * Generated from the data given at
@@ -195,7 +205,7 @@ object Huffman {
   /**
    * Write a function that returns the decoded secret
    */
-  def decodedSecret: List[Char] = ???
+  def decodedSecret: List[Char] = decode(frenchCode, secret)
 
 
 
