@@ -185,8 +185,8 @@ object Huffman {
       else decodeAccumulator(tree, bits.tail, message ++ List(char))
     case Fork(left, right, chars, weights) => 
       if(bits.isEmpty) message
-      else if(bits.head == 0) decode(left, bits.tail)
-      else decode(right, bits.tail)
+      else if(bits.head == 0) decodeAccumulator(left, bits.tail, message)
+      else decodeAccumulator(right, bits.tail, message)
   }
   
   /**
