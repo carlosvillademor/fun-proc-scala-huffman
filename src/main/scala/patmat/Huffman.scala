@@ -177,21 +177,24 @@ object Huffman {
    */
   def decode(tree: CodeTree, bits: List[Bit]): List[Char] = 
     if(bits.isEmpty) List()
-    else decodeAccumulator(tree, bits, List())
+    else decodeAccumulator(tree, tree, bits, List())
   
-  private def decodeAccumulator(tree: CodeTree, bits: List[Bit], message: List[Char]): List[Char] = tree match {
+  private def decodeAccumulator(originalTree: CodeTree, tree: CodeTree, bits: List[Bit], message: List[Char]): List[Char] = tree match {
     case Leaf(char, _) =>
       bits match{
-        case head::tail => decodeAccumulator(tree, bits.tail, message ++ List(char))
+        case head::tail => decodeNextCharacter(originalTree, tail, message ++ List(char))
         case _ => message ++ List(char)
       }
     case Fork(left, right, _, _) => 
       bits match {
-        case 0::tail => decodeAccumulator(left, tail, message)
-        case 1::tail => decodeAccumulator(right, tail, message)
+        case 0::tail => decodeAccumulator(originalTree, left, tail, message)
+        case 1::tail => decodeAccumulator(originalTree, right, tail, message)
         case _ => message
       }
   }
+  	
+  private def decodeNextCharacter(originalTree: CodeTree, bits: List[Bit], message: List[Char]): List[Char] =
+    decodeAccumulator(originalTree, originalTree, bits, message)
   
   /**
    * A Huffman coding tree for the French language.
