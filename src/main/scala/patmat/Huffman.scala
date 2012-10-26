@@ -182,7 +182,7 @@ object Huffman {
   private def decodeAccumulator(originalTree: CodeTree, tree: CodeTree, bits: List[Bit], message: List[Char]): List[Char] = tree match {
     case Leaf(char, _) =>
       bits match{
-        case head::tail => decodeNextCharacter(originalTree, tail, message ++ List(char))
+        case head::tail => decodeNextCharacter(originalTree, head::tail, message ++ List(char))
         case _ => message ++ List(char)
       }
     case Fork(left, right, _, _) => 
