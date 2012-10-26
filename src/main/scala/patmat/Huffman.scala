@@ -180,13 +180,17 @@ object Huffman {
     else decodeAccumulator(tree, bits, List())
   
   private def decodeAccumulator(tree: CodeTree, bits: List[Bit], message: List[Char]): List[Char] = tree match {
-    case Leaf(char, weight) =>
-      if(bits.isEmpty) message ++ List(char)
-      else decodeAccumulator(tree, bits.tail, message ++ List(char))
-    case Fork(left, right, chars, weights) => 
-      if(bits.isEmpty) message
-      else if(bits.head == 0) decodeAccumulator(left, bits.tail, message)
-      else decodeAccumulator(right, bits.tail, message)
+    case Leaf(char, _) =>
+      bits match{
+        case head::tail => decodeAccumulator(tree, bits.tail, message ++ List(char))
+        case _ => message ++ List(char)
+      }
+    case Fork(left, right, _, _) => 
+      bits match {
+        case 0::tail => decodeAccumulator(left, tail, message)
+        case 1::tail => decodeAccumulator(right, tail, message)
+        case _ => message
+      }
   }
   
   /**
